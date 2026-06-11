@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Signos Vitales</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark hide-answers">
+    <!-- Contenedor Principal -->
+    <div class="app-container">
+        
+        <!-- Barra Superior (Header) -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="pulse-indicator"></div>
+                <h1>MONITOR DE SIGNOS VITALES</h1>
+            </div>
+            
+            <div class="header-right">
+                <!-- Reloj en vivo -->
+                <div class="live-clock" id="liveClock">00:00:00</div>
+                
+                <!-- Controles Académicos -->
+                <div class="academic-controls">
+                    <!-- Estado de Diagnóstico -->
+                    <div class="patient-status-badge status-pending" id="patientStatus">EVALUACIÓN PENDIENTE</div>
+                    
+                    <button id="cambiarCifrasBtn" class="control-btn academic-btn-case" title="Cargar caso clínico aleatorio para examen">
+                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
+                        <span>Cambiar Cifras</span>
+                    </button>
+                    <button id="mostrarRespuestaBtn" class="control-btn academic-btn-ans" title="Mostrar/Ocultar si está elevado, normal o bajo">
+                        <!-- Eye Open Icon -->
+                        <svg class="icon eye-open" viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        <!-- Eye Closed Icon -->
+                        <svg class="icon eye-closed hidden" viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M12 19c.52 0 1.04-.05 1.56-.14l2.7 2.7c-1.31.54-2.75.84-4.26.84-5.18 0-9.6-3.22-11.4-7.8a10.027 10.027 0 0 1 3.23-4.22l2.67 2.67C6.18 13.91 6 14.94 6 16c0 3.31 2.69 6 6 6zm-8.8-7c1.72-3.89 5.67-6.5 10.3-6.5.65 0 1.28.06 1.9.17l2.2-2.2C15.82 2.62 13.97 2.3 12 2.3c-5.18 0-9.6 3.22-11.4 7.8.84 2.13 2.21 3.96 3.91 5.34l2.69-2.67c-.24-.48-.42-.99-.54-1.52zM21.73 2.1L22.9 3.27 3.27 22.9l-1.17-1.17 3.35-3.35C3.76 16.92 2.3 15.02 1.5 12.8c1.8-4.58 6.22-7.8 11.4-7.8 1.48 0 2.91.26 4.23.73l4.6-4.63zM12 7.7c-1.8 0-3.3 1.5-3.3 3.3 0 .42.08.81.22 1.18l4.26-4.26c-.37-.14-.76-.22-1.18-.22zm3.3 5c0 1.8-1.5 3.3-3.3 3.3-.42 0-.81-.08-1.18-.22l4.26-4.26c.14.37.22.76.22 1.18z"/>
+                        </svg>
+                        <span id="btnAnsText">Mostrar Respuesta</span>
+                    </button>
+                </div>
+                
+                <!-- Controles Rápidos -->
+                <div class="quick-controls">
+                    <!-- Botón de Audio Beep -->
+                    <button id="toggleAudioBtn" class="control-btn" title="Activar/Silenciar sonido de latidos">
+                        <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path id="audioIconPath" fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-8 8H6l5 5v-4.18l-5-5H4v4.18zm18 0c0 3.07-1.89 5.7-4.59 6.78l1.09 1.09C20.73 18.29 22.5 15.35 22.5 12s-1.77-6.29-4-7.87l-1.09 1.09c2.7 1.08 4.59 3.71 4.59 6.78zM19 12c0 1.93-1.09 3.6-2.68 4.47l1.09 1.09C19.04 16.14 20 14.18 20 12s-.96-4.14-2.59-5.56l-1.09 1.09C17.91 8.4 19 10.07 19 12z" />
+                        </svg>
+                        <span id="audioStatusText">Silenciado</span>
+                    </button>
+                    
+                    <!-- Toggle de Modo (Monitor / Bosquejo) -->
+                    <div class="toggle-mode-container">
+                        <span class="toggle-label">Modo Bosquejo</span>
+                        <label class="switch">
+                            <input type="checkbox" id="modeToggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <!-- Botón Configuración -->
+                    <button id="openConfigBtn" class="control-btn config-trigger" title="Ajustar valores de signos vitales">
+                        <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.67,9.34,2.85,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Vista 1: Monitor Clínico de Alta Fidelidad (Por defecto) -->
+        <main class="main-content monitor-layout" id="monitorView">
+            <!-- Grid de Signos Vitales -->
+            <div class="vitals-grid">
+                
+                <!-- 1. Frecuencia Cardíaca (LPM) -->
+                <div class="vital-card card-lpm" id="cardLpm">
+                    <div class="card-header">
+                        <span class="vital-title">Frecuencia Cardíaca</span>
+                        <span class="vital-unit">LPM</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="vital-value-container">
+                            <span class="vital-value" id="valLpm">95</span>
+                        </div>
+                        <div class="waveform-container">
+                            <canvas id="canvasEcg"></canvas>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgeLpm"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Presión Arterial (PA) -->
+                <div class="vital-card card-pa" id="cardPa">
+                    <div class="card-header">
+                        <span class="vital-title">Presión Arterial</span>
+                        <span class="vital-unit">mmHg</span>
+                    </div>
+                    <div class="card-body no-wave">
+                        <div class="vital-value-container large-font">
+                            <span class="vital-label-inline">PA</span>
+                            <span class="vital-value" id="valPa">117/75</span>
+                        </div>
+                        <div class="vital-subdata">
+                            <span class="subdata-label">SYS/DIA</span>
+                            <span class="subdata-value" id="valPaSub">PAM: 89</span>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgePa"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Saturación de Oxígeno (SAto2) -->
+                <div class="vital-card card-sato2" id="cardSato2">
+                    <div class="card-header">
+                        <span class="vital-title">Sat. de Oxígeno</span>
+                        <span class="vital-unit">% SpO₂</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="vital-value-container">
+                            <span class="vital-label-inline">SAto2</span>
+                            <span class="vital-value" id="valSato2">95</span>
+                        </div>
+                        <div class="waveform-container">
+                            <canvas id="canvasPpg"></canvas>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgeSato2"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Frecuencia Respiratoria (FR) -->
+                <div class="vital-card card-fr" id="cardFr">
+                    <div class="card-header">
+                        <span class="vital-title">Frecuencia Respiratoria</span>
+                        <span class="vital-unit">rpm</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="vital-value-container">
+                            <span class="vital-label-inline">FR</span>
+                            <span class="vital-value" id="valFr">17</span>
+                        </div>
+                        <div class="waveform-container">
+                            <canvas id="canvasResp"></canvas>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgeFr"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Temperatura -->
+                <div class="vital-card card-temp" id="cardTemp">
+                    <div class="card-header">
+                        <span class="vital-title">Temperatura</span>
+                        <span class="vital-unit">°C</span>
+                    </div>
+                    <div class="card-body no-wave">
+                        <div class="vital-value-container">
+                            <span class="vital-value" id="valTemp">36.5</span>
+                        </div>
+                        <div class="vital-subdata">
+                            <span class="subdata-value" id="valTempF">97.7 °F</span>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgeTemp"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Glicemia -->
+                <div class="vital-card card-glu" id="cardGlu">
+                    <div class="card-header">
+                        <span class="vital-title">Glicemia</span>
+                        <span class="vital-unit">mg/dL</span>
+                    </div>
+                    <div class="card-body no-wave">
+                        <div class="vital-value-container">
+                            <span class="vital-value" id="valGlu">95</span>
+                        </div>
+                        <div class="vital-subdata">
+                            <span class="subdata-label">Glucosa en Sangre</span>
+                        </div>
+                        <div class="badge-container">
+                            <span class="answer-badge" id="badgeGlu"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Vista 2: Bosquejo en Papel Cuadriculado (Exacto al dibujo) -->
+        <main class="main-content sketch-layout hidden" id="sketchView">
+            <div class="paper-canvas">
+                <!-- Columna Izquierda: SatO2 escrito verticalmente -->
+                <div class="sketch-left">
+                    <div class="sketch-vertical-value-container">
+                        <div class="sketch-vertical-value" id="sketchSato2">95%</div>
+                        <div class="sketch-badge sketch-vertical-badge" id="sketchBadgeSato2"></div>
+                    </div>
+                </div>
+                
+                <!-- Columna Derecha: Stack de Valores con divisorias horizontales -->
+                <div class="sketch-right">
+                    <!-- Frecuencia Cardíaca -->
+                    <div class="sketch-item">
+                        <span class="sketch-val" id="sketchLpm">95</span>
+                        <span class="sketch-lbl">LPM</span>
+                        <span class="sketch-badge" id="sketchBadgeLpm"></span>
+                    </div>
+                    
+                    <div class="sketch-divider"></div>
+                    
+                    <!-- Presión Arterial -->
+                    <div class="sketch-item">
+                        <div class="sketch-pa-wrapper">
+                            <span class="sketch-val" id="sketchPa">117/75</span>
+                            <span class="sketch-lbl-sub">mmHg</span>
+                        </div>
+                        <span class="sketch-badge" id="sketchBadgePa"></span>
+                    </div>
+                    
+                    <div class="sketch-divider"></div>
+                    
+                    <!-- Frecuencia Respiratoria -->
+                    <div class="sketch-item">
+                        <span class="sketch-val" id="sketchFr">17</span>
+                        <span class="sketch-lbl">rpm</span>
+                        <span class="sketch-badge" id="sketchBadgeFr"></span>
+                    </div>
+                    
+                    <div class="sketch-divider"></div>
+                    
+                    <!-- Temperatura -->
+                    <div class="sketch-item">
+                        <span class="sketch-val" id="sketchTemp">36,5</span>
+                        <span class="sketch-lbl">c°</span>
+                        <span class="sketch-badge" id="sketchBadgeTemp"></span>
+                    </div>
+                    
+                    <div class="sketch-divider"></div>
+                    
+                    <!-- Glicemia -->
+                    <div class="sketch-item">
+                        <span class="sketch-val" id="sketchGlu">95</span>
+                        <span class="sketch-lbl">mg/dl</span>
+                        <span class="sketch-badge" id="sketchBadgeGlu"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Panel Lateral de Configuración (Drawer) -->
+        <div class="config-drawer" id="configDrawer">
+            <div class="drawer-header">
+                <h3>Ajustar Parámetros</h3>
+                <button id="closeConfigBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <form id="vitalsForm">
+                    <!-- Simulación Activa -->
+                    <div class="form-group flex-row">
+                        <label for="simToggle">Simulación en vivo (Fluctuaciones)</label>
+                        <label class="switch small">
+                            <input type="checkbox" id="simToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <hr class="drawer-divider">
+
+                    <!-- LPM -->
+                    <div class="form-group">
+                        <label for="inputLpm">Frecuencia Cardíaca (LPM): <span id="inputLpmVal">95</span></label>
+                        <input type="range" id="inputLpm" min="30" max="200" value="95">
+                    </div>
+
+                    <!-- PA SYS -->
+                    <div class="form-group">
+                        <label for="inputPaSys">Presión Sistólica (mmHg): <span id="inputPaSysVal">117</span></label>
+                        <input type="range" id="inputPaSys" min="70" max="220" value="117">
+                    </div>
+
+                    <!-- PA DIA -->
+                    <div class="form-group">
+                        <label for="inputPaDia">Presión Diastólica (mmHg): <span id="inputPaDiaVal">75</span></label>
+                        <input type="range" id="inputPaDia" min="40" max="130" value="75">
+                    </div>
+
+                    <!-- SatO2 -->
+                    <div class="form-group">
+                        <label for="inputSato2">Saturación de Oxígeno (%): <span id="inputSato2Val">95</span></label>
+                        <input type="range" id="inputSato2" min="50" max="100" value="95">
+                    </div>
+
+                    <!-- FR -->
+                    <div class="form-group">
+                        <label for="inputFr">Frecuencia Respiratoria (rpm): <span id="inputFrVal">17</span></label>
+                        <input type="range" id="inputFr" min="8" max="45" value="17">
+                    </div>
+
+                    <!-- Temp -->
+                    <div class="form-group">
+                        <label for="inputTemp">Temperatura (°C): <span id="inputTempVal">36.5</span></label>
+                        <input type="range" id="inputTemp" min="34" max="42" step="0.1" value="36.5">
+                    </div>
+
+                    <!-- Glicemia -->
+                    <div class="form-group">
+                        <label for="inputGlu">Glicemia (mg/dL): <span id="inputGluVal">95</span></label>
+                        <input type="range" id="inputGlu" min="40" max="400" value="95">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="btnRestaurar" class="btn btn-secondary">Restaurar Valores</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Overlay para el panel de configuración -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    </div>
+
+    <!-- Script Principal -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1159 @@
+/* ==========================================================================
+   CSS PRINCIPAL - MONITOR DE SIGNOS VITALES
+   ========================================================================== */
+
+/* Variables de Diseño */
+:root {
+    --bg-black: #000000;
+    --bg-dark-gray: #09090b;
+    --card-bg: rgba(15, 15, 18, 0.75);
+    --card-border: rgba(255, 255, 255, 0.05);
+    --card-border-hover: rgba(255, 255, 255, 0.1);
+    
+    /* Colores Clínicos */
+    --color-lpm: #00e676;       /* Frecuencia Cardíaca - Verde brillante */
+    --color-pa: #ff1744;        /* Presión Arterial - Rojo vibrante */
+    --color-sato2: #00e5ff;     /* Saturación O2 - Cian / Celeste */
+    --color-fr: #ffea00;        /* Frecuencia Respiratoria - Amarillo */
+    --color-temp: #d500f9;      /* Temperatura - Magenta/Violeta */
+    --color-glu: #ff9100;       /* Glicemia - Naranja */
+    
+    /* Colores del Modo Bosquejo (Tinta de lápiz azul) */
+    --sketch-ink: #3b82f6;      /* Azul bolígrafo */
+    --sketch-ink-glow: rgba(59, 130, 246, 0.4);
+    --sketch-grid: rgba(255, 255, 255, 0.04);
+    
+    /* Tipografías */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+    --font-digital: var(--font-sans);
+    --font-sketch: 'Architects Daughter', cursive, sans-serif;
+    
+    /* Transiciones */
+    --transition-speed: 0.3s;
+}
+
+/* Reset de Estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-black);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    min-height: 100vh;
+    scrollbar-color: #27272a #000000;
+    scrollbar-width: thin;
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+}
+
+/* ==========================================================================
+   Estructura General (Layout)
+   ========================================================================== */
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Barra Superior */
+.app-header {
+    background-color: var(--bg-dark-gray);
+    border-bottom: 1px solid var(--card-border);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pulse-indicator {
+    width: 12px;
+    height: 12px;
+    background-color: var(--color-lpm);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--color-lpm);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 15px var(--color-lpm); }
+    100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.app-header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: #f4f4f5;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.live-clock {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: #a1a1aa;
+    letter-spacing: 1px;
+}
+
+.quick-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Botones */
+.control-btn {
+    background: rgba(39, 39, 42, 0.5);
+    border: 1px solid var(--card-border);
+    color: #e4e4e7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
+    transition: all var(--transition-speed);
+}
+
+.control-btn:hover {
+    background: #27272a;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+/* Switch (Checkbox Toggle) */
+.toggle-mode-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    color: #a1a1aa;
+    font-weight: 500;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #3f3f46;
+    transition: .3s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .3s;
+}
+
+input:checked + .slider {
+    background-color: var(--sketch-ink);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ==========================================================================
+   VISTA 1: MONITOR CLÍNICO DE ALTA FIDELIDAD
+   ========================================================================== */
+
+.monitor-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+/* Tarjetas de Signos Vitales (Glassmorphism) */
+.vital-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    transition: transform var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.vital-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-border-hover);
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.vital-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #a1a1aa;
+}
+
+.vital-unit {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #71717a;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    gap: 10px;
+}
+
+/* .card-body.no-wave y padding eliminados para alineación uniforme de elementos */
+
+/* Contenedores de Valores */
+.vital-value-container {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.vital-value {
+    font-family: var(--font-digital);
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.vital-label-inline {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.vital-icon {
+    font-size: 2.2rem;
+    line-height: 1;
+    align-self: center;
+}
+
+.pulse-heart {
+    animation: heartBeat 1s infinite alternate;
+    display: inline-block;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.15); }
+    60% { transform: scale(1); }
+    100% { transform: scale(1); }
+}
+
+/* Sub-datos */
+.vital-subdata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    margin-top: 8px;
+    padding: 0 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    color: #a1a1aa;
+}
+
+.subdata-label {
+    text-transform: uppercase;
+}
+
+.subdata-value {
+    font-weight: 500;
+}
+
+/* Contenedor de Ondas (Waveforms) */
+.waveform-container {
+    width: 100%;
+    height: 70px;
+    margin-top: 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.waveform-container canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Colores específicos de las tarjetas */
+
+/* 1. LPM */
+.card-lpm {
+    box-shadow: inset 0 0 15px rgba(0, 230, 118, 0.03);
+}
+.card-lpm .vital-value {
+    color: var(--color-lpm);
+    text-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+}
+.card-lpm .vital-title {
+    color: var(--color-lpm);
+}
+
+/* 2. Presión Arterial (PA) */
+.card-pa {
+    box-shadow: inset 0 0 15px rgba(255, 23, 68, 0.03);
+}
+.card-pa .vital-value {
+    color: var(--color-pa);
+    text-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
+}
+.card-pa .vital-title {
+    color: var(--color-pa);
+}
+.card-pa .vital-label-inline {
+    color: rgba(255, 23, 68, 0.45);
+}
+
+/* 3. Saturación SpO2 */
+.card-sato2 {
+    box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.03);
+}
+.card-sato2 .vital-value {
+    color: var(--color-sato2);
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+.card-sato2 .vital-title {
+    color: var(--color-sato2);
+}
+.card-sato2 .vital-label-inline {
+    color: rgba(0, 229, 255, 0.45);
+}
+
+/* 4. Frecuencia Respiratoria (FR) */
+.card-fr {
+    box-shadow: inset 0 0 15px rgba(255, 234, 0, 0.03);
+}
+.card-fr .vital-value {
+    color: var(--color-fr);
+    text-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
+}
+.card-fr .vital-title {
+    color: var(--color-fr);
+}
+.card-fr .vital-label-inline {
+    color: rgba(255, 234, 0, 0.45);
+}
+
+/* 5. Temperatura */
+.card-temp {
+    box-shadow: inset 0 0 15px rgba(213, 0, 249, 0.03);
+}
+.card-temp .vital-value {
+    color: var(--color-temp);
+    text-shadow: 0 0 15px rgba(213, 0, 249, 0.4);
+}
+.card-temp .vital-title {
+    color: var(--color-temp);
+}
+
+/* 6. Glicemia */
+.card-glu {
+    box-shadow: inset 0 0 15px rgba(255, 145, 0, 0.03);
+}
+.card-glu .vital-value {
+    color: var(--color-glu);
+    text-shadow: 0 0 15px rgba(255, 145, 0, 0.4);
+}
+.card-glu .vital-title {
+    color: var(--color-glu);
+}
+
+/* Estados de Glicemia */
+.status-normal { color: var(--color-lpm); }
+.status-warning { color: var(--color-fr); }
+.status-danger { color: var(--color-pa); }
+
+/* ==========================================================================
+   VISTA 2: MODO BOSQUEJO (PAPEL CUADRICULADO NEGRO)
+   ========================================================================= */
+
+.sketch-layout {
+    background-color: var(--bg-black);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    min-height: calc(100vh - 70px);
+}
+
+/* Cuaderno / Página de papel */
+.paper-canvas {
+    background-color: #0b0c10;
+    /* Crear cuadrícula de cuaderno en el fondo */
+    background-image: 
+        linear-gradient(var(--sketch-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--sketch-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    position: relative;
+    font-family: var(--font-sketch);
+}
+
+/* Margen de espiral o línea lateral simulando hoja cortada */
+.paper-canvas::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 8px;
+    bottom: 0;
+    width: 2px;
+    border-left: 2px dotted rgba(255, 255, 255, 0.15);
+}
+
+/* Columna Izquierda (SatO2) */
+.sketch-left {
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Número de SatO2 escrito verticalmente */
+.sketch-vertical-value {
+    font-size: 4.8rem;
+    line-height: 1;
+    color: var(--sketch-ink);
+    text-shadow: 0 0 12px var(--sketch-ink-glow), 0 0 2px var(--sketch-ink);
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    user-select: none;
+    letter-spacing: 2px;
+}
+
+/* Columna Derecha (Resto de Vitals) */
+.sketch-right {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 30px;
+    border-left: 4px solid var(--sketch-ink);
+    /* Sombras para dar efecto 3D/boceto a la línea divisoria vertical */
+    box-shadow: -4px 0 12px var(--sketch-ink-glow);
+}
+
+/* Items del Boceto */
+.sketch-item {
+    padding: 12px 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    user-select: none;
+}
+
+.sketch-val {
+    font-size: 4.5rem;
+    line-height: 0.9;
+    color: var(--sketch-ink);
+    text-shadow: 0 0 12px var(--sketch-ink-glow), 0 0 2px var(--sketch-ink);
+    font-weight: bold;
+    display: inline-block;
+}
+
+.sketch-lbl {
+    font-size: 1.8rem;
+    color: var(--sketch-ink);
+    text-shadow: 0 0 10px var(--sketch-ink-glow);
+    transform: rotate(-3deg);
+    margin-bottom: 4px;
+}
+
+/* Presión Arterial en Boceto (con unidad mmHg abajo) */
+.sketch-pa-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.sketch-lbl-sub {
+    font-size: 1.1rem;
+    color: var(--sketch-ink);
+    text-shadow: 0 0 8px var(--sketch-ink-glow);
+    margin-top: -8px;
+    margin-left: 40px;
+    align-self: flex-start;
+    transform: rotate(2deg);
+}
+
+/* Divisores Horizontales (Estilo hecho a mano) */
+.sketch-divider {
+    height: 4px;
+    background-color: var(--sketch-ink);
+    width: 100%;
+    margin: 4px 0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--sketch-ink-glow);
+    position: relative;
+    /* Crear irregularidad simulando trazo de lápiz */
+    transform: rotate(0.4deg) skewX(-10deg);
+}
+
+/* Irregularidad de tamaño en líneas del boceto */
+.sketch-divider:nth-of-type(2) { transform: rotate(-0.5deg) scaleX(0.98); }
+.sketch-divider:nth-of-type(4) { transform: rotate(0.3deg) scaleX(0.99); }
+.sketch-divider:nth-of-type(6) { transform: rotate(-0.2deg) scaleX(0.95); }
+.sketch-divider:nth-of-type(8) { transform: rotate(0.6deg) scaleX(0.97); }
+
+/* ==========================================================================
+   PANEL DE CONFIGURACIÓN LATERAL (DRAWER) Y OVERLAY
+   ========================================================================== */
+
+.config-drawer {
+    position: fixed;
+    top: 0;
+    right: -360px; /* Escondido */
+    width: 360px;
+    height: 100vh;
+    background-color: var(--bg-dark-gray);
+    border-left: 1px solid var(--card-border);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.config-drawer.open {
+    right: 0;
+}
+
+.drawer-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drawer-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f4f4f5;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-speed);
+}
+
+.close-btn:hover {
+    color: #ffffff;
+}
+
+.drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.drawer-divider {
+    border: 0;
+    height: 1px;
+    background: var(--card-border);
+    margin: 20px 0;
+}
+
+/* Formularios en Drawer */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group.flex-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-group.flex-row label {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #a1a1aa;
+}
+
+.form-group label span {
+    font-family: var(--font-mono);
+    color: #ffffff;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+/* Range Inputs */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #27272a;
+    border-radius: 3px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--sketch-ink);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    transition: background var(--transition-speed);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #60a5fa;
+}
+
+/* Switch pequeño para el Drawer */
+.switch.small {
+    width: 36px;
+    height: 20px;
+}
+
+.switch.small .slider:before {
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    bottom: 4px;
+}
+
+input:checked + .switch.small .slider:before {
+    transform: translateX(16px);
+}
+
+/* Botones de acción del Drawer */
+.form-actions {
+    margin-top: 30px;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-speed);
+}
+
+.btn-secondary {
+    background: #27272a;
+    color: #ffffff;
+    border: 1px solid var(--card-border);
+}
+
+.btn-secondary:hover {
+    background: #3f3f46;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Overlay */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 190;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Clases de utilidad */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD (Media Queries)
+   ========================================================================== */
+
+/* Pantallas Medianas (Laptops y Tablets grandes) */
+@media (max-width: 1024px) {
+    .vitals-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Pantallas Pequeñas (Tablets y Móviles) */
+@media (max-width: 768px) {
+    .app-header {
+        padding: 12px 16px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .header-right {
+        justify-content: space-between;
+    }
+    
+    .main-content {
+        padding: 16px;
+    }
+    
+    .vitals-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .vital-value {
+        font-size: 3.8rem;
+    }
+    
+    .paper-canvas {
+        padding: 30px 16px;
+        max-width: 100%;
+    }
+    
+    .sketch-vertical-value {
+        font-size: 3.8rem;
+    }
+    
+    .sketch-val {
+        font-size: 3.6rem;
+    }
+    
+    .sketch-lbl {
+        font-size: 1.4rem;
+    }
+    
+    .config-drawer {
+        width: 100%;
+        right: -100%;
+    }
+}
+
+/* ==========================================================================
+   CARACTERÍSTICAS ACADÉMICAS (MASCARADO DE RESPUESTAS Y BADGES)
+   ========================================================================== */
+
+/* Variables para forzar todo en blanco en el modo académico oculto */
+body.hide-answers {
+    --color-lpm: #ffffff;
+    --color-pa: #ffffff;
+    --color-sato2: #ffffff;
+    --color-fr: #ffffff;
+    --color-temp: #ffffff;
+    --color-glu: #ffffff;
+    --sketch-ink: #ffffff;
+    --sketch-ink-glow: rgba(255, 255, 255, 0.2);
+}
+
+/* Forzar íconos no coloreados en modo oculto */
+body.hide-answers .vital-icon,
+body.hide-answers .pulse-heart {
+    filter: grayscale(1) brightness(2);
+}
+
+/* Ajustes a tarjetas en modo oculto */
+body.hide-answers .vital-card {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02) !important;
+}
+body.hide-answers .vital-card .vital-value {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3) !important;
+}
+body.hide-answers .vital-card .vital-title {
+    color: #a1a1aa !important;
+}
+
+/* Contenedor de Badges */
+.badge-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 8px;
+    height: 28px; /* Altura reservada */
+}
+
+/* Estilo general del Badge de respuesta */
+.answer-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.hide-answers .answer-badge {
+    opacity: 0;
+    transform: translateY(5px);
+    pointer-events: none;
+}
+
+/* Estados clínicos de los badges */
+.badge-bajo {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.1) !important;
+}
+
+.badge-normal {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1) !important;
+}
+
+.badge-elevado {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Modo Bosquejo (Sketch Mode) con Respuestas */
+.sketch-vertical-value-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.sketch-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 12px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    align-self: center;
+    display: inline-block;
+}
+
+.sketch-vertical-badge {
+    transform: rotate(-90deg);
+    margin-left: 0;
+    margin-top: 25px;
+    white-space: nowrap;
+}
+
+body.hide-answers .sketch-badge {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sketch-badge.badge-bajo {
+    color: #60a5fa !important;
+    text-shadow: 0 0 6px rgba(59, 130, 246, 0.6) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.sketch-badge.badge-normal {
+    color: #34d399 !important;
+    text-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.sketch-badge.badge-elevado {
+    color: #f87171 !important;
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.6) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Controles Académicos en Header */
+.academic-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 8px;
+}
+
+.academic-btn-case {
+    background: rgba(249, 115, 22, 0.15) !important;
+    border: 1px solid rgba(249, 115, 22, 0.3) !important;
+    color: #ffedd5 !important;
+}
+.academic-btn-case:hover {
+    background: rgba(249, 115, 22, 0.3) !important;
+    border-color: #f97316 !important;
+    color: #ffffff !important;
+}
+
+.academic-btn-ans {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #eff6ff !important;
+    font-weight: 500;
+}
+.academic-btn-ans:hover {
+    background: rgba(59, 130, 246, 0.3) !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+/* Cambio estético cuando las respuestas están activas */
+body:not(.hide-answers) #mostrarRespuestaBtn {
+    background: rgba(16, 185, 129, 0.25) !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* ==========================================================================
+   MEJORAS DE DISEÑO PROFESIONAL Y ESTÉTICA PREMIUM
+   ========================================================================== */
+
+/* Fondo Radial para el Body (Da profundidad de interfaz médica moderna) */
+body {
+    background: radial-gradient(circle at center, #0a0a0d 0%, #000000 100%) !important;
+}
+
+/* Badge de Estado General del Paciente */
+.patient-status-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: all var(--transition-speed);
+}
+
+.status-pending {
+    background: rgba(39, 39, 42, 0.5);
+    border: 1px solid var(--card-border);
+    color: #a1a1aa;
+}
+
+.status-stable {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+    animation: pulseStable 2.5s infinite ease-in-out;
+}
+
+.status-critical {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+    animation: pulseCritical 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseStable {
+    0% { transform: scale(1); opacity: 0.95; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.95; }
+}
+
+@keyframes pulseCritical {
+    0% { transform: scale(1); box-shadow: 0 0 8px rgba(239, 68, 68, 0.15); }
+    50% { transform: scale(1.03); box-shadow: 0 0 18px rgba(239, 68, 68, 0.35); }
+    100% { transform: scale(1); box-shadow: 0 0 8px rgba(239, 68, 68, 0.15); }
+}
+
+/* Grillas de fondo del Canvas en modo oscurecido */
+.waveform-container canvas {
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 15px 15px;
+    background-position: left top;
+    transition: background var(--transition-speed);
+}
+
+/* En modo revelado, la grilla del canvas adopta la tonalidad del signo vital */
+body:not(.hide-answers) .card-lpm canvas {
+    background-image: 
+        linear-gradient(rgba(0, 230, 118, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 230, 118, 0.02) 1px, transparent 1px);
+}
+body:not(.hide-answers) .card-sato2 canvas {
+    background-image: 
+        linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+}
+body:not(.hide-answers) .card-fr canvas {
+    background-image: 
+        linear-gradient(rgba(255, 234, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 234, 0, 0.02) 1px, transparent 1px);
+}
+
+/* Iluminación de bordes de tarjetas médicas en modo respuestas */
+body:not(.hide-answers) .vital-card.card-lpm { border-color: rgba(0, 230, 118, 0.2) !important; box-shadow: inset 0 0 15px rgba(0, 230, 118, 0.04), 0 4px 20px rgba(0, 230, 118, 0.05) !important; }
+body:not(.hide-answers) .vital-card.card-pa { border-color: rgba(255, 23, 68, 0.2) !important; box-shadow: inset 0 0 15px rgba(255, 23, 68, 0.04), 0 4px 20px rgba(255, 23, 68, 0.05) !important; }
+body:not(.hide-answers) .vital-card.card-sato2 { border-color: rgba(0, 229, 255, 0.2) !important; box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.04), 0 4px 20px rgba(0, 229, 255, 0.05) !important; }
+body:not(.hide-answers) .vital-card.card-fr { border-color: rgba(255, 234, 0, 0.2) !important; box-shadow: inset 0 0 15px rgba(255, 234, 0, 0.04), 0 4px 20px rgba(255, 23, 68, 0.05) !important; }
+body:not(.hide-answers) .vital-card.card-temp { border-color: rgba(213, 0, 249, 0.2) !important; box-shadow: inset 0 0 15px rgba(213, 0, 249, 0.04), 0 4px 20px rgba(213, 0, 249, 0.05) !important; }
+body:not(.hide-answers) .vital-card.card-glu { border-color: rgba(255, 145, 0, 0.2) !important; box-shadow: inset 0 0 15px rgba(255, 145, 0, 0.04), 0 4px 20px rgba(255, 145, 0, 0.05) !important; }
+
+/* Línea de margen roja en papel cuadriculado (Modo Bosquejo - muy real) */
+.paper-canvas::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 45px;
+    bottom: 0;
+    width: 2px;
+    border-left: 1px solid rgba(239, 68, 68, 0.25);
+    pointer-events: none;
+}
+    
+

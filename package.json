@@ -1,0 +1,22 @@
+{
+  "name": "monitor-signos-vitales",
+  "version": "1.0.0",
+  "description": "Monitor interactivo de signos vitales en tiempo real con modo clínico y modo bosquejo.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 5173",
+    "build": "echo 'No build step required'",
+    "preview": "python3 -m http.server 5173"
+  },
+  "keywords": [
+    "signos vitales",
+    "medical monitor",
+    "clinical",
+    "sketch"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}
