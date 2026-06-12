@@ -150,9 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Control de Pantalla Completa
     if (DOM.toggleFullscreenBtn) {
-        DOM.toggleFullscreenBtn.addEventListener('click', toggleFullscreen);
-        document.addEventListener('fullscreenchange', actualizarBotonFullscreen);
-        document.addEventListener('webkitfullscreenchange', actualizarBotonFullscreen);
+        const docEl = document.documentElement;
+        const supportsFullscreen = !!(docEl.requestFullscreen || docEl.webkitRequestFullscreen);
+        if (!supportsFullscreen) {
+            DOM.toggleFullscreenBtn.style.display = 'none';
+        } else {
+            DOM.toggleFullscreenBtn.addEventListener('click', toggleFullscreen);
+            document.addEventListener('fullscreenchange', actualizarBotonFullscreen);
+            document.addEventListener('webkitfullscreenchange', actualizarBotonFullscreen);
+        }
     }
 
     // Botones Académicos
