@@ -83,7 +83,7 @@ body {
 .app-header {
     background-color: var(--bg-dark-gray);
     border-bottom: 1px solid var(--card-border);
-    padding: 16px 24px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -99,8 +99,8 @@ body {
 }
 
 .pulse-indicator {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     background-color: var(--color-lpm);
     border-radius: 50%;
     box-shadow: 0 0 10px var(--color-lpm);
@@ -114,21 +114,21 @@ body {
 }
 
 .app-header h1 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     color: #f4f4f5;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
 }
 
 .live-clock {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #a1a1aa;
     letter-spacing: 1px;
 }
@@ -173,6 +173,17 @@ body {
     height: 36px;
 }
 
+.app-header .control-btn {
+    font-size: 0.78rem;
+    padding: 6px 10px;
+}
+
+.app-header .control-btn.icon-only {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+}
+
 /* Switch (Checkbox Toggle) */
 .toggle-mode-container {
     display: flex;
@@ -181,7 +192,7 @@ body {
 }
 
 .toggle-label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: #a1a1aa;
     font-weight: 500;
 }
@@ -1075,9 +1086,9 @@ body {
 
 /* Badge de Estado General del Paciente */
 .patient-status-badge {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 6px;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -1191,6 +1202,19 @@ body:not(.hide-answers) .status-sketch-altered .sketch-vertical-value {
     width: 2px;
     border-left: 1px solid rgba(239, 68, 68, 0.25);
     pointer-events: none;
+}
+
+/* Footer sutil y oculto */
+.app-footer {
+    text-align: center;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.05); /* Muy oculto, color casi igual al fondo */
+    padding: 12px 0;
+    font-family: var(--font-sans);
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: 1.5px;
+    width: 100%;
 }
     
 
